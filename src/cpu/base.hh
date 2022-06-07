@@ -54,6 +54,7 @@
 #include "arch/generic/interrupts.hh"
 #include "base/statistics.hh"
 #include "debug/Mwait.hh"
+#include "tensor_core.hh"
 #include "mem/htm.hh"
 #include "mem/port_proxy.hh"
 #include "sim/clocked_object.hh"
@@ -108,6 +109,8 @@ class CPUProgressEvent : public Event
 
 class BaseCPU : public ClockedObject
 {
+  public:
+    tensor_core TensorCore;
   protected:
 
     /// Instruction count used for SPARC misc register
@@ -653,3 +656,4 @@ class BaseCPU : public ClockedObject
 #endif // !IS_NULL_ISA
 
 #endif // __CPU_BASE_HH__
+

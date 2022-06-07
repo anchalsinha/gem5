@@ -135,7 +135,7 @@ decode QUADRANT default Unknown::unknown() {
                     return std::make_shared<IllegalInstFault>(
                             "source reg x0", machInst);
                 }
-                Rc1_sd = (int32_t)Rc1_sd + imm;
+                Rc1_sw = (int32_t)(Rc1_sw + imm);
             }});
             0x2: c_li({{
                 imm = CIMM5;
@@ -421,6 +421,37 @@ decode QUADRANT default Unknown::unknown() {
             }
         }
 
+        0x02: decode FUNCT3 {
+            format ROp {
+                0x0: tc_multiply({{
+                        xc->tcBase()->getCpuPtr()->TensorCore.multiply();
+                    }}, MatrixOp);
+                0x1: tc_add({{
+                        xc->tcBase()->getCpuPtr()->TensorCore.add();
+                    }}, MatrixOp);
+            }
+            format TensorCoreLoad {
+                0x2: tc_ld_a({{
+                    for(int i = 0; i < Mat.size(); i++) {
+                        xc->tcBase()->getCpuPtr()-> TensorCore.A[i] = Mat[i];
+                    }
+                }});
+                0x3: tc_ld_b({{
+                    for(int i = 0; i < Mat.size(); i++) {
+                        xc->tcBase()->getCpuPtr()-> TensorCore.B[i] = Mat[i];
+                    }
+                }});	
+	        }
+            format TensorCoreStore {
+                0x4: tc_st({{
+                    for(int i = 0; i < Mat.size(); i++) {
+                        Mat[i] = xc->tcBase()->getCpuPtr()-> TensorCore.output[i];
+                        xc->tcBase()->getCpuPtr()->TensorCore.output[i] = 0;
+                    }
+                }});       
+            }
+        }
+
         0x03: decode FUNCT3 {
             format FenceOp {
                 0x0: fence({{
@@ -471,7 +502,7 @@ decode QUADRANT default Unknown::unknown() {
         0x06: decode FUNCT3 {
             format IOp {
                 0x0: addiw({{
-                    Rd_sd = Rs1_sw + imm;
+                    Rd_sw = (int32_t)(Rs1_sw + imm);
                 }}, int32_t);
                 0x1: slliw({{
                     Rd_sd = Rs1_sw << imm;
@@ -1025,17 +1056,20 @@ decode QUADRANT default Unknown::unknown() {
                 }}, FloatDivOp);
                 0x10: decode ROUND_MODE {
                     0x0: fsgnj_s({{
-                        Fd_bits = boxF32(insertBits(unboxF32(Fs2_bits), 30, 0,
-                                                    unboxF32(Fs1_bits)));
+                        auto sign = bits(unboxF32(Fs2_bits), 31);
+                        Fd_bits = boxF32(insertBits(unboxF32(Fs1_bits), 31,
+                                                    sign));
                         }}, FloatMiscOp);
                     0x1: fsgnjn_s({{
-                        Fd_bits = boxF32(insertBits(unboxF32(~Fs2_bits), 30, 0,
-                                                    unboxF32(Fs1_bits)));
+                        auto sign = ~bits(unboxF32(Fs2_bits), 31);
+                        Fd_bits = boxF32(insertBits(unboxF32(Fs1_bits), 31,
+                                                    sign));
                         }}, FloatMiscOp);
                     0x2: fsgnjx_s({{
-                        Fd_bits = boxF32(insertBits(
-                                    unboxF32(Fs1_bits) ^ unboxF32(Fs2_bits),
-                                    30, 0, unboxF32(Fs1_bits)));
+                        auto sign = bits(
+                            unboxF32(Fs1_bits) ^ unboxF32(Fs2_bits), 31);
+                        Fd_bits = boxF32(insertBits(unboxF32(Fs1_bits), 31,
+                                                    sign));
                         }}, FloatMiscOp);
                 }
                 0x11: decode ROUND_MODE {
@@ -1461,3 +1495,4 @@ decode QUADRANT default Unknown::unknown() {
         0x1e: M5Op::M5Op();
     }
 }
+

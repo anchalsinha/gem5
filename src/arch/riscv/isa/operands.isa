@@ -38,7 +38,8 @@ def operand_types {{
     'sd' : 'int64_t',
     'ud' : 'uint64_t',
     'sf' : 'float',
-    'df' : 'double'
+    'df' : 'double',
+    'mm' : 'Matrix'
 }};
 
 def operands {{
@@ -73,8 +74,10 @@ def operands {{
 
 #Memory Operand
     'Mem': ('Mem', 'ud', None, (None, 'IsLoad', 'IsStore'), 5),
+    'Mat': ('Mem', 'mm', None, (None, 'IsLoad', 'IsStore'), 6),
 
 #Program Counter Operands
     'PC': ('PCState', 'ud', 'pc', (None, None, 'IsControl'), 7),
     'NPC': ('PCState', 'ud', 'npc', (None, None, 'IsControl'), 8),
+
 }};

@@ -42,7 +42,7 @@ from m5.params import *
 class OpClass(Enum):
     vals = ['No_OpClass', 'IntAlu', 'IntMult', 'IntDiv', 'FloatAdd',
             'FloatCmp', 'FloatCvt', 'FloatMult', 'FloatMultAcc', 'FloatDiv',
-            'FloatMisc', 'FloatSqrt',
+            'FloatMisc', 'FloatSqrt','Matrix',
             'SimdAdd', 'SimdAddAcc', 'SimdAlu', 'SimdCmp', 'SimdCvt',
             'SimdMisc', 'SimdMult', 'SimdMultAcc', 'SimdShift', 'SimdShiftAcc',
             'SimdDiv', 'SimdSqrt', 'SimdFloatAdd', 'SimdFloatAlu',
@@ -74,3 +74,4 @@ class FUDesc(SimObject):
 
     count = Param.Int("number of these FU's available")
     opList = VectorParam.OpDesc("operation classes for this FU type")
+

@@ -53,6 +53,7 @@ namespace gem5
 using enums::OpClass;
 using enums::No_OpClass;
 
+static const OpClass MatrixOp = enums::Matrix;
 static const OpClass IntAluOp = enums::IntAlu;
 static const OpClass IntMultOp = enums::IntMult;
 static const OpClass IntDivOp = enums::IntDiv;
@@ -110,3 +111,4 @@ static const OpClass Num_OpClasses = enums::Num_OpClass;
 } // namespace gem5
 
 #endif // __CPU__OP_CLASS_HH__
+
